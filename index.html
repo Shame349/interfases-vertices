@@ -59,22 +59,24 @@ const chart = new Chart(ctx, {
   }
 });
 
-    function actualizarGrafica(snapshot) {
-      const data = snapshot.val();
-      const puntos = [];
+function actualizarGrafica(snapshot) {
+  const data = snapshot.val();
+  console.log("Datos recibidos:", data); // <-- Agrega esto
 
-      for (let i = 1; i <= 8; i++) {
-        const v = data["V" + i];
-        if (v && v.X !== undefined && v.Y !== undefined) {
-          puntos.push({ x: v.X, y: v.Y });
-        }
-      }
+  const puntos = [];
 
-      chart.data.datasets[0].data = puntos;
-      chart.update();
+  for (let i = 1; i <= 8; i++) {
+    const v = data["V" + i];
+    if (v && v.X !== undefined && v.Y !== undefined) {
+      puntos.push({ x: v.X, y: v.Y });
     }
+  }
 
-    db.ref('VERTICES').on('value', actualizarGrafica);
+  chart.data.datasets[0].data = puntos;
+  chart.update();
+}
+
+    db.ref('Proyecto_IntGraficas/VERTICES').on('value', actualizarGrafica);
   </script>
 </body>
 </html>
