@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Gráfica de VERTICES</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin-top: 40px; }
+    canvas { max-width: 700px; margin: auto; }
+  </style>
+</head>
+<body>
+  <h1>Gráfica en Tiempo Real de VERTICES</h1>
+  <canvas id="grafica" width="600" height="400"></canvas>
+
+  <script>
+	const firebaseConfig = {
+  	apiKey: "AIzaSyDX129wNKSnix0n12shrx7na1UzLxLZnpw",
+  	authDomain: "interfases-gradic.firebaseapp.com",
+  	databaseURL: "https://interfases-gradic-default-rtdb.firebaseio.com",
+  	projectId: "interfases-gradic",
+  	storageBucket: "interfases-gradic.firebasestorage.app",
+  	messagingSenderId: "522567108556",
+  	appId: "1:522567108556:web:329132a7a5b8006f4fff69"
+
+};
+
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+const ctx = document.getElementById('grafica').getContext('2d');
+const chart = new Chart(ctx, {
+  type: 'scatter',
+  data: {
+    datasets: [{
+      label: 'Vértices',
+      data: [], // Se llenará después
+      borderColor: 'blue',
+      backgroundColor: 'red',
+      showLine: true, // Conecta los puntos
+      tension: 0.1
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: {
+        type: 'linear',
+        position: 'bottom',
+        title: { display: true, text: 'X' }
+      },
+      y: {
+        title: { display: true, text: 'Y' }
+      }
+    }
+  }
+});
+
+    function actualizarGrafica(snapshot) {
+      const data = snapshot.val();
+      const puntos = [];
+
+      for (let i = 1; i <= 8; i++) {
+        const v = data["V" + i];
+        if (v && v.X !== undefined && v.Y !== undefined) {
+          puntos.push({ x: v.X, y: v.Y });
+        }
+      }
+
+      chart.data.datasets[0].data = puntos;
+      chart.update();
+    }
+
+    db.ref('VERTICES').on('value', actualizarGrafica);
+  </script>
+</body>
+</html>
